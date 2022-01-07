@@ -12,7 +12,7 @@ def spoiler(inline_query):
         if len(inline_query.query) > 200:
             long_message = InlineQueryResultArticle('1', 'Слишком многа букав', InputTextMessageContent('Сообщение слишком длинное, сократи его!'),
                 description='Created by Zeus428',
-                thumb_url='https://e7.pngegg.com/pngimages/161/526/png-clipart-sign-stop-sign-stop.png')
+                thumb_url='https://cdn-icons-png.flaticon.com/512/4522/4522081.png')
             bot.answer_inline_query(inline_query.id, [long_message], is_personal=True, cache_time=10)
         
         else:
@@ -27,7 +27,7 @@ def spoiler(inline_query):
                     InputTextMessageContent('Специально для ' + spoilers[id]['people']),
                     reply_markup=button_personal,
                     description='Created by Zeus428',
-                    thumb_url='https://www.nicepng.com/png/detail/969-9697766_lock-icon-png-sign.png')
+                    thumb_url='https://cdn-icons-png.flaticon.com/512/3064/3064155.png')
 
                 except_person = InlineQueryResultArticle('3', 'Всем кроме  ' + spoilers[id]['people'],
                     InputTextMessageContent('Для всех кроме '  + spoilers[id]['people']),
@@ -44,7 +44,7 @@ def spoiler(inline_query):
                     InputTextMessageContent('Сообщение для всех'),
                     reply_markup=button_public,
                     description='Created by Zeus428',
-                    thumb_url='https://www.pinclipart.com/picdir/middle/194-1948906_free-security-icons-open-lock-icon-png-clipart.png')
+                    thumb_url='https://cdn-icons-png.flaticon.com/512/65/65000.png')
 
                 bot.answer_inline_query(inline_query.id, [public_message], is_personal=True, cache_time=10)
 
