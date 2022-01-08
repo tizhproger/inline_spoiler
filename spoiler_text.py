@@ -19,34 +19,35 @@ def spoiler(inline_query):
             id = str(uuid.uuid4())
             if '@' in inline_query.query:
                 message = list(filter(None, inline_query.query.split('@')))
-                spoilers[id] = {'message':message[0][:-1], 'people':', '.join(['@' + s for s in message[1:]])}
-                button_personal = InlineKeyboardMarkup().row(InlineKeyboardButton("Посмотреть", callback_data=f"spoiler={id}=personal={inline_query.from_user.username}"))
-                button_except = InlineKeyboardMarkup().row(InlineKeyboardButton("Посмотреть", callback_data=f"spoiler={id}=except={inline_query.from_user.username}"))
+                if len(message) > 1:
+                    spoilers[id] = {'message':message[0][:-1], 'people':', '.join(['@' + s for s in message[1:]])}
+                    button_personal = InlineKeyboardMarkup().row(InlineKeyboardButton("Посмотреть", callback_data=f"spoiler={id}=personal={inline_query.from_user.username}"))
+                    button_except = InlineKeyboardMarkup().row(InlineKeyboardButton("Посмотреть", callback_data=f"spoiler={id}=except={inline_query.from_user.username}"))
 
-                for_person = InlineQueryResultArticle('2', 'Сообщение только для ' + spoilers[id]['people'],
-                    InputTextMessageContent('Специально для ' + spoilers[id]['people']),
-                    reply_markup=button_personal,
-                    description='Created by Zeus428',
-                    thumb_url='https://cdn-icons-png.flaticon.com/512/3064/3064155.png')
+                    for_person = InlineQueryResultArticle('2', 'Сообщение только для ' + spoilers[id]['people'],
+                        InputTextMessageContent('Специально для ' + spoilers[id]['people']),
+                        reply_markup=button_personal,
+                        description='Created by Zeus428',
+                        thumb_url='https://cdn-icons-png.flaticon.com/512/3064/3064155.png')
 
-                except_person = InlineQueryResultArticle('3', 'Всем кроме  ' + spoilers[id]['people'],
-                    InputTextMessageContent('Для всех кроме '  + spoilers[id]['people']),
-                    reply_markup=button_except,
-                    description='Created by Zeus428',
-                    thumb_url='https://cdn-icons-png.flaticon.com/512/38/38488.png')
+                    except_person = InlineQueryResultArticle('3', 'Всем кроме  ' + spoilers[id]['people'],
+                        InputTextMessageContent('Для всех кроме '  + spoilers[id]['people']),
+                        reply_markup=button_except,
+                        description='Created by Zeus428',
+                        thumb_url='https://cdn-icons-png.flaticon.com/512/38/38488.png')
 
-                bot.answer_inline_query(inline_query.id, [for_person, except_person], is_personal=True, cache_time=10)
+                    bot.answer_inline_query(inline_query.id, [for_person, except_person], is_personal=True, cache_time=10)
+                    return
 
-            else:
-                button_public = InlineKeyboardMarkup().row(InlineKeyboardButton("Посмотреть", callback_data=f"spoiler={id}=public=none"))
-                spoilers[id] = {'message':inline_query.query, 'people':'none'}
-                public_message = InlineQueryResultArticle('1', 'Публичное сообщение',
-                    InputTextMessageContent('Сообщение для всех'),
-                    reply_markup=button_public,
-                    description='Created by Zeus428',
-                    thumb_url='https://cdn-icons-png.flaticon.com/512/65/65000.png')
+            button_public = InlineKeyboardMarkup().row(InlineKeyboardButton("Посмотреть", callback_data=f"spoiler={id}=public=none"))
+            spoilers[id] = {'message':inline_query.query, 'people':'none'}
+            public_message = InlineQueryResultArticle('1', 'Публичное сообщение',
+                InputTextMessageContent('Сообщение для всех'),
+                reply_markup=button_public,
+                description='Created by Zeus428',
+                thumb_url='https://cdn-icons-png.flaticon.com/512/65/65000.png')
 
-                bot.answer_inline_query(inline_query.id, [public_message], is_personal=True, cache_time=10)
+            bot.answer_inline_query(inline_query.id, [public_message], is_personal=True, cache_time=10)
 
     except Exception as e:
         print('*****')
