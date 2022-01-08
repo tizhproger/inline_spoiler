@@ -5,15 +5,6 @@ API_TOKEN = 'token'
 bot = telebot.TeleBot(API_TOKEN)
 spoilers = {}
 
-def username_fix(username):
-    usr_name = username.replace('{', '')
-    usr_name = username.replace('>', '')
-    usr_name = username.replace('<', '')
-    usr_name = username.replace('}', '')
-    usr_name = usr_name.encode(
-        'utf-8')[:11].decode('utf-8', 'ignore') if len(usr_name.encode('utf-8')) > 20 else usr_name
-    return usr_name
-
 
 @bot.inline_handler(lambda query: len(query.query) > 0)
 def spoiler(inline_query):
@@ -29,8 +20,8 @@ def spoiler(inline_query):
             if '@' in inline_query.query:
                 message = list(filter(None, inline_query.query.split('@')))
                 spoilers[id] = {'message':message[0][:-1], 'people':', '.join(['@' + s for s in message[1:]])}
-                button_personal = InlineKeyboardMarkup().row(InlineKeyboardButton("Посмотреть", callback_data=f"spoiler-{id}-personal-{username_fix(inline_query.from_user.username)}"))
-                button_except = InlineKeyboardMarkup().row(InlineKeyboardButton("Посмотреть", callback_data=f"spoiler-{id}-except-{username_fix(inline_query.from_user.username)}"))
+                button_personal = InlineKeyboardMarkup().row(InlineKeyboardButton("Посмотреть", callback_data=f"spoiler={id}=personal={inline_query.from_user.username}"))
+                button_except = InlineKeyboardMarkup().row(InlineKeyboardButton("Посмотреть", callback_data=f"spoiler={id}=except={inline_query.from_user.username}"))
 
                 for_person = InlineQueryResultArticle('2', 'Сообщение только для ' + spoilers[id]['people'],
                     InputTextMessageContent('Специально для ' + spoilers[id]['people']),
@@ -47,7 +38,7 @@ def spoiler(inline_query):
                 bot.answer_inline_query(inline_query.id, [for_person, except_person], is_personal=True, cache_time=10)
 
             else:
-                button_public = InlineKeyboardMarkup().row(InlineKeyboardButton("Посмотреть", callback_data=f"spoiler-{id}-public-{username_fix(inline_query.from_user.username)}"))
+                button_public = InlineKeyboardMarkup().row(InlineKeyboardButton("Посмотреть", callback_data=f"spoiler={id}=public=none"))
                 spoilers[id] = {'message':inline_query.query, 'people':'none'}
                 public_message = InlineQueryResultArticle('1', 'Публичное сообщение',
                     InputTextMessageContent('Сообщение для всех'),
@@ -63,10 +54,10 @@ def spoiler(inline_query):
         print('Details: ' + str(e))
 
 
-@bot.callback_query_handler(func=lambda call: call.data.startswith("spoiler-"))
+@bot.callback_query_handler(func=lambda call: call.data.startswith("spoiler="))
 def spoiler_check(call):
     try:
-        data = call.data.split('-')
+        data = call.data.split('=')
         id, mode, sender = data[1], data[2], data[3]
 
         if id in spoilers:
