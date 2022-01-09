@@ -1,5 +1,6 @@
 import telebot
 import uuid
+import re
 from telebot.types import InlineKeyboardButton, InlineKeyboardMarkup, InlineQueryResultArticle, InputTextMessageContent
 API_TOKEN = 'token'
 bot = telebot.TeleBot(API_TOKEN)
