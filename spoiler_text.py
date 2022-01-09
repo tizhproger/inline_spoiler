@@ -20,24 +20,35 @@ def spoiler(inline_query):
             if '@' in inline_query.query:
                 message = list(filter(None, inline_query.query.split('@')))
                 if len(message) > 1:
-                    spoilers[id] = {'message':message[0][:-1], 'people':', '.join(['@' + s for s in message[1:]])}
-                    button_personal = InlineKeyboardMarkup().row(InlineKeyboardButton("Посмотреть", callback_data=f"spoiler={id}=personal={inline_query.from_user.username}"))
-                    button_except = InlineKeyboardMarkup().row(InlineKeyboardButton("Посмотреть", callback_data=f"spoiler={id}=except={inline_query.from_user.username}"))
+                    tmp = []
+                    for s in message[1:]:
+                        if re.search('\W+', s) is None:
+                            tmp.append('@' + s)
+                        else:
+                            splitted = re.split('\W+', s)
+                            tmp.append('@' + splitted[0])
+                            if len(splitted) > 1:
+                                message[0] += ' '.join(splitted[1:])
 
-                    for_person = InlineQueryResultArticle('2', 'Сообщение только для ' + spoilers[id]['people'],
-                        InputTextMessageContent('Специально для ' + spoilers[id]['people']),
-                        reply_markup=button_personal,
-                        description='Created by Zeus428',
-                        thumb_url='https://cdn-icons-png.flaticon.com/512/3064/3064155.png')
+                    if len(tmp) > 0:
+                        spoilers[id] = {'message':message[0].rstrip(), 'people':', '.join(tmp)}
+                        button_personal = InlineKeyboardMarkup().row(InlineKeyboardButton("Посмотреть", callback_data=f"spoiler={id}=personal={inline_query.from_user.username}"))
+                        button_except = InlineKeyboardMarkup().row(InlineKeyboardButton("Посмотреть", callback_data=f"spoiler={id}=except={inline_query.from_user.username}"))
 
-                    except_person = InlineQueryResultArticle('3', 'Всем кроме  ' + spoilers[id]['people'],
-                        InputTextMessageContent('Для всех кроме '  + spoilers[id]['people']),
-                        reply_markup=button_except,
-                        description='Created by Zeus428',
-                        thumb_url='https://cdn-icons-png.flaticon.com/512/38/38488.png')
+                        for_person = InlineQueryResultArticle('2', 'Сообщение только для ' + spoilers[id]['people'],
+                            InputTextMessageContent('Специально для ' + spoilers[id]['people']),
+                            reply_markup=button_personal,
+                            description='Created by Zeus428',
+                            thumb_url='https://cdn-icons-png.flaticon.com/512/3064/3064155.png')
 
-                    bot.answer_inline_query(inline_query.id, [for_person, except_person], is_personal=True, cache_time=10)
-                    return
+                        except_person = InlineQueryResultArticle('3', 'Всем кроме  ' + spoilers[id]['people'],
+                            InputTextMessageContent('Для всех кроме '  + spoilers[id]['people']),
+                            reply_markup=button_except,
+                            description='Created by Zeus428',
+                            thumb_url='https://cdn-icons-png.flaticon.com/512/38/38488.png')
+
+                        bot.answer_inline_query(inline_query.id, [for_person, except_person], is_personal=True, cache_time=10)
+                        return
 
             button_public = InlineKeyboardMarkup().row(InlineKeyboardButton("Посмотреть", callback_data=f"spoiler={id}=public=none"))
             spoilers[id] = {'message':inline_query.query, 'people':'none'}
