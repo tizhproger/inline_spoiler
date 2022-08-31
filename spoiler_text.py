@@ -96,4 +96,4 @@ def spoiler_check(call):
         print('Details: ' + str(e))
 
 
-bot.infinity_polling()
+bot.infinity_polling(allowed_updates=util.update_types)
